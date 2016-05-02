@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 @_exported import HTTP
+import Foundation
 
 public struct Server: Responder, Middleware {
     
@@ -97,7 +98,8 @@ public extension Message {
     }
     
     public var isWebSocket: Bool {
-        return connection.first?.lowercased() == "upgrade" && upgrade.first?.lowercased() == "websocket"
+        let connectionIsUpgrade = connection.first?.lowercased().range(of: "upgrade") != nil
+        return connectionIsUpgrade && upgrade.first?.lowercased() == "websocket"
     }
     
 }
