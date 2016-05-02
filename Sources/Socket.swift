@@ -24,7 +24,10 @@
 
 @_exported import Event
 @_exported import Base64
-@_exported import OpenSSL
+import SHA1
+import Darwin
+import CryptoEssentials
+//@_exported import OpenSSL
 
 internal extension Data {
     init<T>(number: T) {
@@ -376,7 +379,8 @@ public class Socket {
     private func send(_ opCode: Frame.OpCode, data: Data) throws {
         let maskKey: Data
         if mode == .Client {
-            maskKey = try Random.getBytes(4)
+            let rand: UInt32 = arc4random_uniform(UInt32.max)
+            maskKey = Data(Int(rand).bytes(4))
         } else {
             maskKey = []
         }
@@ -387,7 +391,7 @@ public class Socket {
     }
     
     static func accept(_ key: String) -> String? {
-        return try? Base64.encode(Hash.hash(.SHA1, message: (key + GUID).data))
+        return Base64.encode(SHA1.calculate((key + GUID).data.bytes))
     }
     
 }
