@@ -25,9 +25,13 @@
 @_exported import Event
 @_exported import Base64
 import SHA1
-import Darwin
 import CryptoEssentials
-//@_exported import OpenSSL
+
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
 
 internal extension Data {
     init<T>(number: T) {
@@ -379,7 +383,11 @@ public class Socket {
     private func send(_ opCode: Frame.OpCode, data: Data) throws {
         let maskKey: Data
         if mode == .Client {
-            let rand: UInt32 = arc4random_uniform(UInt32.max)
+            #if os(Linux)
+                let rand: UInt32 = UInt32(random())
+            #else
+                let rand: UInt32 = arc4random_uniform(UInt32.max)
+            #endif
             maskKey = Data(Int(rand).bytes(4))
         } else {
             maskKey = []

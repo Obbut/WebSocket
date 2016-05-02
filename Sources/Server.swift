@@ -98,7 +98,11 @@ public extension Message {
     }
     
     public var isWebSocket: Bool {
-        let connectionIsUpgrade = connection.first?.lowercased().range(of: "upgrade") != nil
+        #if os(Linux)
+            let connectionIsUpgrade = connection.first?.lowercased().rangeOfString("upgrade") != nil
+        #else
+            let connectionIsUpgrade = connection.first?.lowercased().range(of: "upgrade") != nil
+        #endif
         return connectionIsUpgrade && upgrade.first?.lowercased() == "websocket"
     }
     
