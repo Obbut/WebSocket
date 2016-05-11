@@ -54,7 +54,7 @@ public struct Server: Responder, Middleware {
         ]
         
         var _response: Response?
-        let response = Response(status: .switchingProtocols, headers: headers) { _, stream in
+        let response = Response(status: .switchingProtocols, headers: headers) { stream in
             guard let response = _response else {
                 throw Error.NoResponse
             }
